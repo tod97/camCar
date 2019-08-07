@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import { HttpRequestsService } from '../http-requests.service';
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -7,6 +9,15 @@ import { Component } from '@angular/core';
 })
 export class Tab1Page {
 
-  constructor() {}
+  constructor(private req: HttpRequestsService) { }
 
+  ionViewDidEnter() { }
+
+  connect() {
+    this.req.socketConnect();
+  }
+
+  disconnect() {
+    this.req.socketDisconnect();
+  }
 }

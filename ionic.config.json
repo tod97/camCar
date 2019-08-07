@@ -1,6 +1,14 @@
 {
   "name": "camCar",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular",
-  "id": "8b6de219"
+  "id": "8b6de219",
+  "proxies": [
+    {
+      "path": "/:5000",
+      "proxyUrl": "http://192.168.1.197:5000"
+    }
+  ]
 }
