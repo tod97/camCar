@@ -19,41 +19,23 @@ def GPIOConfig():
     GPIO.setup(Motor2B,GPIO.OUT)
     GPIO.setup(Motor2E,GPIO.OUT)
 #DC MOTORS FUNCTIONS
-def move(back, left, right):
-    if back:
-        if left:
-            GPIO.output(Motor1A,GPIO.LOW)
-            GPIO.output(Motor1B,GPIO.HIGH)
-            GPIO.output(Motor1E,GPIO.HIGH)
-        if right:
-            GPIO.output(Motor2A,GPIO.LOW)
-            GPIO.output(Motor2B,GPIO.HIGH)
-            GPIO.output(Motor2E,GPIO.HIGH)
+def moveMotors(dLeft, dRight):
+    if dLeft > 0 and dRight > 0:
+        GPIO.output(Motor1A,GPIO.HIGH)
+        GPIO.output(Motor1B,GPIO.LOW)
+        GPIO.output(Motor2A,GPIO.HIGH)
+        GPIO.output(Motor2B,GPIO.LOW)
     else:
-        if left:
-            GPIO.output(Motor1A,GPIO.HIGH)
-            GPIO.output(Motor1B,GPIO.LOW)
-            GPIO.output(Motor1E,GPIO.HIGH)
-        if right:
-            GPIO.output(Motor2A,GPIO.HIGH)
-            GPIO.output(Motor2B,GPIO.LOW)
-            GPIO.output(Motor2E,GPIO.HIGH)
-def stopMotors(l = True, r = True):
-    if l:
-        GPIO.output(Motor1E,GPIO.LOW)
-    if r:
-        GPIO.output(Motor2E,GPIO.LOW)
-
-def startMotors(position):
-    if position == 'forward':
-        move(False, True, True)
-    if position == 'back':
-        move(True, True, True)
-    if position == 'left':
-        move(False, True, False)
-    if position == 'right':
-        move(False, False, True)
-
+        GPIO.output(Motor1A,GPIO.LOW)
+        GPIO.output(Motor1B,GPIO.HIGH)
+        GPIO.output(Motor2A,GPIO.LOW)
+        GPIO.output(Motor2B,GPIO.HIGH)
+    GPIO.output(Motor1E,GPIO.HIGH)
+    GPIO.output(Motor2E,GPIO.HIGH)
+def stopMotors():
+    GPIO.output(Motor1E,GPIO.LOW)
+    GPIO.output(Motor2E,GPIO.LOW)
+            
 
 #PY SOCKET CONFIG
 sio = socketio.Server(cors_allowed_origins='*')
@@ -65,19 +47,13 @@ def connect(sid, environ):
     pass
 @sio.event
 def disconnect(sid):
+    stopMotors()
     GPIO.cleanup()
     pass
-@sio.on('shortMove')
-def shortMove(sid, data):
-    print 'Short moving: ' + data['position']
-    startMotors(data['position'])
-    sleep(0.5)
-    stopMotors()
-    pass
-@sio.on('startMove')
-def startMove(sid, data):
-    print 'Start moving: ' + data['position']
-    startMotors(data['position'])
+@sio.on('move')
+def move(sid, data):
+    print 'Left Power: ' + str(data['dLeft']) + ' Right Power: ' + str(data['dRight'])
+    moveMotors(data['dLeft'], data['dRight'])
     pass
 @sio.on('stopMove')
 def stopMove(sid, data):

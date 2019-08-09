@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 
 import { HttpRequestsService } from '../http-requests.service';
 
+declare var require: any;
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -23,17 +25,22 @@ export class Tab1Page {
       size: 200,
       zone: document.getElementById('zone_joystick')
     });
-    this.controller.on('move', (evt, data) => {
+    this.controller.on('move end', (evt, data) => {
       switch (evt.type) {
         case 'move':
-          this.req.socketSend('move', this.calculatePower(data.distance, data.direction.x, data.direction.y, data.angle.radian));
+          if (data.direction) {
+            this.req.socketSend('move', this.calculatePower(data.distance, data.direction.x, data.direction.y, data.angle.radian));
+          }
+          break;
+        case 'end':
+          this.req.socketSend('stopMove', {});
           break;
       }
     });
   }
 
   calculatePower(distance: number, x: string, y: string, radian: number) {
-    let dLeft: number, dRight: number;
+    let dLeft, dRight;
     if (x === 'right' && y === 'up') {
       dLeft = distance;
       dRight = distance * Math.sin(radian);
