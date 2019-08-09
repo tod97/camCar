@@ -28,7 +28,16 @@ export class HttpRequestsService {
   }
 
   socketConnect() {
-    this.socket.connect();
+    return this.socket.connect();
+    /*
+    return new Promise(resolve => {
+        this.socket.connect().then(res => {
+          resolve(res);
+        }, err =>{
+          resolve(err);
+        });
+    });
+    */
   }
 
   socketSend(name: string, obj: any) {
