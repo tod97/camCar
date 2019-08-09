@@ -26,6 +26,8 @@
 
     <ion-button expand="block" (click)="connect()" *ngIf="!req.socketConnected">Connect</ion-button>
     <ion-button expand="block" color="danger" (click)="disconnect()" *ngIf="req.socketConnected">Disconnect</ion-button>
+    
+    <div id="zone_joystick" style="position:relative; height: 50%;"></div>
 
-    <app-controller *ngIf="req.socketConnected"></app-controller>
+    <!--<app-controller *ngIf="req.socketConnected"></app-controller>-->
 </ion-content>
