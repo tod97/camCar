@@ -4,12 +4,12 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 #DC MOTORS CONFIG
-Motor1A = 16
-Motor1B = 18
-Motor1E = 22
-Motor2A = 19
-Motor2B = 21
-Motor2E = 23
+Motor1A = 19
+Motor1B = 21
+Motor1E = 23
+Motor2A = 16
+Motor2B = 18
+Motor2E = 22
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(Motor1A,GPIO.OUT)
 GPIO.setup(Motor1B,GPIO.OUT)
@@ -61,7 +61,6 @@ def connect(sid, environ):
 @sio.event
 def disconnect(sid):
     stopMotors()
-    GPIO.cleanup()
     pass
 @sio.on('move')
 def move(sid, data):
