@@ -60,6 +60,10 @@ export class Tab1Page {
     return {dLeft, dRight};
   }
 
+  turn(angle) {
+    this.req.socketSend('turn', {angle});
+  }
+
   connect() {
     this.req.socketConnect();
   }

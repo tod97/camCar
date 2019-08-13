@@ -17,16 +17,16 @@ GPIO.setup(Motor1E,GPIO.OUT)
 GPIO.setup(Motor2A,GPIO.OUT)
 GPIO.setup(Motor2B,GPIO.OUT)
 GPIO.setup(Motor2E,GPIO.OUT)
-pwm = GPIO.PWM(Motor1E, 100)
-pwm.start(0)
-pwm2 = GPIO.PWM(Motor2E, 100)
-pwm2.start(0)
+rightPwm = GPIO.PWM(Motor1E, 100)
+rightPwm.start(0)
+leftPwm = GPIO.PWM(Motor2E, 100)
+leftPwm.start(0)
 
 #DC MOTORS FUNCTIONS
 def moveMotors(dLeft, dRight):
-    global pwm, pwm2
-    pwm.ChangeDutyCycle(abs(dRight))
-    pwm2.ChangeDutyCycle(abs(dLeft))
+    global rightPwm, leftPwm
+    rightPwm.ChangeDutyCycle(abs(dRight))
+    leftPwm.ChangeDutyCycle(abs(dLeft))
     if dLeft > 0 and dRight > 0:
         GPIO.output(Motor1A,GPIO.HIGH)
         GPIO.output(Motor1B,GPIO.LOW)
@@ -41,6 +41,19 @@ def moveMotors(dLeft, dRight):
         GPIO.output(Motor2A,GPIO.LOW)
         GPIO.output(Motor2B,GPIO.HIGH)
         GPIO.output(Motor2E,GPIO.HIGH)
+
+def turnMotors(angle):
+    global rightPwm, leftPwm
+    rightPwm.ChangeDutyCycle(100)
+    leftPwm.ChangeDutyCycle(100)
+    GPIO.output(Motor1A,GPIO.HIGH)
+    GPIO.output(Motor1B,GPIO.LOW)
+    GPIO.output(Motor1E,GPIO.HIGH)
+    GPIO.output(Motor2A,GPIO.LOW)
+    GPIO.output(Motor2B,GPIO.HIGH)
+    GPIO.output(Motor2E,GPIO.HIGH)
+    sleep(0.0038 * angle)
+    stopMotors()
 
 def stopMotors():
     GPIO.output(Motor1A,GPIO.LOW)
@@ -66,6 +79,11 @@ def disconnect(sid):
 def move(sid, data):
     print 'Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight']))
     moveMotors(int(data['dLeft']), int(data['dRight']))
+    pass
+@sio.on('turn')
+def turn(sid, data):
+    print 'Turn ' + str(data['angle']) + ' degrees'
+    turnMotors(data['angle'])
     pass
 @sio.on('stopMove')
 def stopMove(sid, data):

@@ -24,10 +24,40 @@
     </ion-card>
     -->
 
-    <ion-button expand="block" (click)="connect()" *ngIf="!req.socketConnected">Connect</ion-button>
-    <ion-button expand="block" color="danger" (click)="disconnect()" *ngIf="req.socketConnected">Disconnect</ion-button>
-    
-    <div id="zone_joystick" style="position:relative; height: 50%;"></div>
+    <ng-container *ngIf="!req.socketConnected">
+      <ion-button expand="block" (click)="connect()">  
+        <ion-icon slot="start" name="power"></ion-icon>
+        Connect
+      </ion-button>
+      <ion-card class="welcome-card">
+        <ion-card-content>
+          <p>Connect to the raspberry to use this app</p>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
 
-    <!--<app-controller *ngIf="req.socketConnected"></app-controller>-->
+    <ion-button *ngIf="req.socketConnected" expand="block" color="danger" (click)="disconnect()">
+      <ion-icon slot="start" name="power"></ion-icon>
+      Disconnect
+    </ion-button>
+
+    <div id="zone_joystick" style="position:relative; height: 60%;"></div>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-button size="large" expand="block" (click)="turn(180)">
+            <ion-icon slot="start" name="refresh"></ion-icon>
+            180°
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button size="large" expand="block"(click)="turn(360)">
+            <ion-icon slot="start" name="walk"></ion-icon>
+            360°
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
 </ion-content>
