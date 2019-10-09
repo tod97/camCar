@@ -12,7 +12,7 @@ import { AppComponent } from './app.component';
 import { HttpRequestsService } from './http-requests.service';
 
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-const config: SocketIoConfig = { url: 'http://192.168.1.197:5000', options: {} };
+const config: SocketIoConfig = { url: 'http://192.168.1.6:5000', options: {} };
  
 @NgModule({
   declarations: [AppComponent],

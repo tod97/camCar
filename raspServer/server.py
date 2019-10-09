@@ -1,8 +1,23 @@
 import eventlet
 import socketio
 import RPi.GPIO as GPIO
+import cv2
+from flask import Flask, render_template, Response
 from time import sleep
 
+#VIDEOCAMERA CLASS DEFINITION
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture(0)
+    
+    def __del__(self):
+        self.video.release()
+    
+    def get_frame(self):
+        success, image = self.video.read()
+        ret, jpeg = cv2.imencode('.jpg', image)
+        return jpeg.tobytes()
+        
 #DC MOTORS CONFIG
 Motor1A = 19
 Motor1B = 21
@@ -64,6 +79,24 @@ def stopMotors():
     GPIO.output(Motor2E,GPIO.LOW)
 
 
+#PY FLASK CONFIG
+flapp = Flask(__name__)
+#PY FLASK EVENTS
+@flapp.route('/')
+def index():
+    return render_template('index.html')
+
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+@flapp.route('/video_feed')
+def video_feed():
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
 #PY SOCKET CONFIG
 sio = socketio.Server(cors_allowed_origins='*')
 app = socketio.WSGIApp(sio)
@@ -94,3 +127,4 @@ def stopMove(sid, data):
 #MAIN EXECUTE
 if __name__ == '__main__':
     eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
+    flapp.run(host='0.0.0.0', debug=True)

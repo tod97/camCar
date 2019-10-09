@@ -10,7 +10,7 @@ import { Socket } from 'ngx-socket-io';
 export class HttpRequestsService {
 
   id: string;
-  site = 'http://192.168.1.197';
+  site = 'http://192.168.1.6';
   port = '5000';
   isApp: boolean;
   socketConnected = false;
