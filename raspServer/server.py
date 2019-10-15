@@ -2,6 +2,7 @@ from threading import Thread, Lock
 import cv2
 import eventlet
 import socketio
+import threading
 import RPi.GPIO as GPIO
 from time import sleep
 from flask import Flask, render_template, Response
@@ -109,9 +110,7 @@ def stopMotors():
 
 #PY SOCKET CONFIG
 sio = socketio.Server(cors_allowed_origins='*')
-sio.async_mode='threading'
 app = Flask(__name__)
-app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
 
 #PY CAMERA API
 @app.route('/')
@@ -155,7 +154,13 @@ def stopMove(sid, data):
     print 'Stop moving.'
     stopMotors()
     pass
-
+def serve_app(_sio, _app):
+    app = socketio.Middleware(_sio, _app)
+    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
+    
 #MAIN EXECUTE
 if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
+    
+    wst = threading.Thread(target=serve_app, args=(sio,app))
+    wst.daemon = True
+    wst.start()
