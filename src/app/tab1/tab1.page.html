@@ -17,39 +17,23 @@
 </ion-header>
 
 <ion-content>
-    <!--
-    <ion-card class="welcome-card">
-      <video width="100%" controls>
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-        <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg">
-        Your browser does not support HTML5 video.
-      </video>
-      <ion-card-header>
-        <ion-card-subtitle></ion-card-subtitle>
-        <ion-card-title>Controller</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p></p>
-      </ion-card-content>
-    </ion-card>
-    -->
 
     <ng-container>
       <ion-card style="height:40%" class="welcome-card">
         <ng-container *ngIf="!showCamera">
-          <ion-button (click)="setCamera(true)" style="height:100%;width:100%;">
+          <ion-button (click)="setCamera()" style="height:100%;width:100%;">
             <ion-icon size="large" name="camera"></ion-icon>
           </ion-button>
         </ng-container>
-        <ng-container *ngIf="showCamera && req.frame == ''" style="height:100%;width:100%;">
-          <ion-spinner style="position:absolute;top:50%;left:50%;transform: translate(-50%, -50%);">
+        <ng-container style="height:100%;width:100%;">
+        <!--  <ion-spinner style="position:absolute;top:50%;left:50%;transform: translate(-50%, -50%);">
           </ion-spinner>
         </ng-container>
-        <ng-container *ngIf="showCamera && req.frame != ''">
-          <ion-button (click)="setCamera(true)" color="dark" style="z-index:10;position:absolute;">
+        <ng-container *ngIf="showCamera && req.frame != ''">-->
+          <ion-button (click)="setCamera()" color="dark" style="z-index:10;position:absolute;">
             <ion-icon size="large" name="close"></ion-icon>
           </ion-button>
-          <ion-img style="position:relative;" [src]="req.frame">
+          <ion-img src="http://192.168.1.6:5000/video_feed">
           </ion-img>
         </ng-container>
       </ion-card>

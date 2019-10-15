@@ -40,21 +40,8 @@ export class Tab1Page {
     });
   }
 
-  setCamera(update = false) {
-    this.connect();
-    if (update) {
-      this.showCamera = !this.showCamera;
-    }
-    if (this.showCamera) {
-      setTimeout(() => {
-        this.req.socketSend('video', {});
-        if (this.req.socketConnect && this.showCamera) {
-          this.setCamera();
-        }
-      }, 1000);
-    } else {
-      this.req.frame = '';
-    }
+  setCamera() {
+    this.showCamera = !this.showCamera;
   }
 
   calculatePower(distance: number, x: string, y: string, radian: number) {
