@@ -13,6 +13,7 @@ export class Tab1Page {
 
   controller: any;
   controllerData: any;
+  showCamera = false;
 
   constructor(private req: HttpRequestsService) {
   }
@@ -37,6 +38,23 @@ export class Tab1Page {
           break;
       }
     });
+  }
+
+  setCamera(update = false) {
+    this.connect();
+    if (update) {
+      this.showCamera = !this.showCamera;
+    }
+    if (this.showCamera) {
+      setTimeout(() => {
+        this.req.socketSend('video', {});
+        if (this.req.socketConnect && this.showCamera) {
+          this.setCamera();
+        }
+      }, 1000);
+    } else {
+      this.req.frame = '';
+    }
   }
 
   calculatePower(distance: number, x: string, y: string, radian: number) {
@@ -69,6 +87,7 @@ export class Tab1Page {
   }
 
   disconnect() {
+    this.showCamera = false;
     this.req.socketDisconnect();
   }
 }

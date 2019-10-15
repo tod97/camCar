@@ -14,8 +14,9 @@ export class HttpRequestsService {
   port = '5000';
   isApp: boolean;
   socketConnected = false;
+  frame: any = '';
 
-  constructor(private socket: Socket, private http: HttpClient, platform: Platform) {
+  constructor(public socket: Socket, private http: HttpClient, platform: Platform) {
     this.isApp = !platform.is('mobileweb') && (document.URL.search('localhost:8100') === -1);
 
     socket.on('connect', () => {
@@ -24,6 +25,11 @@ export class HttpRequestsService {
 
     socket.on('disconnect', () => {
       this.socketConnected = socket.ioSocket.connected;
+    });
+
+    socket.on('newframe', (obj) => {
+      console.log('nuovo frame');
+      this.frame = obj.frame;
     });
   }
 
@@ -45,6 +51,7 @@ export class HttpRequestsService {
   }
 
   socketDisconnect() {
+    this.frame = '';
     this.socket.disconnect();
   }
 
