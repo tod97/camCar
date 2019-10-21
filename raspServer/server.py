@@ -45,7 +45,7 @@ class CameraStream(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.stream.release()
 
-camera = CameraStream().start()
+cap = CameraStream().start()
 
 #DC MOTORS CONFIG
 Motor1A = 19
@@ -105,8 +105,8 @@ def index():
 
 
 def gen_frame():
-    while camera:
-        frame = camera.read()
+    while cap:
+        frame = cap.read()
         convert = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + convert + b'\r\n') # concate frame one by one and show result

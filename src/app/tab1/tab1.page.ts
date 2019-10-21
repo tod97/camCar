@@ -42,7 +42,15 @@ export class Tab1Page {
   }
 
   setCamera() {
-    this.showCamera = !this.showCamera;
+    if (this.showCamera) {
+      this.showCamera = false;
+    } else {
+      if (this.req.socketConnected) {
+        this.showCamera = true;
+      } else {
+        this.connect();
+      }
+    }
   }
 
   calculatePower(distance: number, x: string, y: string, radian: number) {
