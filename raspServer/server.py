@@ -1,51 +1,7 @@
-from threading import Thread, Lock
-import cv2
 import eventlet
 import socketio
-import threading
 import RPi.GPIO as GPIO
 from time import sleep
-from flask import Flask, render_template, Response
-
-#VIDEOCAMERA DEFINITION
-class CameraStream(object):
-    def __init__(self, src=0):
-        self.stream = cv2.VideoCapture(src)
-
-        (self.grabbed, self.frame) = self.stream.read()
-        self.started = False
-        self.read_lock = Lock()
-
-    def start(self):
-        if self.started:
-            print("already started!!")
-            return None
-        self.started = True
-        self.thread = Thread(target=self.update, args=())
-        self.thread.start()
-        return self
-
-    def update(self):
-        while self.started:
-            (grabbed, frame) = self.stream.read()
-            self.read_lock.acquire()
-            self.grabbed, self.frame = grabbed, frame
-            self.read_lock.release()
-
-    def read(self):
-        self.read_lock.acquire()
-        frame = self.frame.copy()
-        self.read_lock.release()
-        return frame
-
-    def stop(self):
-        self.started = False
-        self.thread.join()
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.stream.release()
-
-cap = CameraStream().start()
 
 #DC MOTORS CONFIG
 Motor1A = 19
@@ -94,29 +50,10 @@ def stopMotors():
     GPIO.output(Motor2B,GPIO.LOW)
     GPIO.output(Motor2E,GPIO.LOW)
 
+
 #PY SOCKET CONFIG
 sio = socketio.Server(cors_allowed_origins='*')
-app = Flask(__name__)
-
-#PY CAMERA API
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-def gen_frame():
-    while cap:
-        frame = cap.read()
-        convert = cv2.imencode('.jpg', frame)[1].tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + convert + b'\r\n') # concate frame one by one and show result
-
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen_frame(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
+app = socketio.WSGIApp(sio)
 #PY SOCKET EVENTS
 @sio.event
 def connect(sid, environ):
@@ -130,25 +67,12 @@ def move(sid, data):
     print 'Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight']))
     moveMotors(int(data['dLeft']), int(data['dRight']))
     pass
-@sio.on('record')
-def turn(sid, data):
-    if data:
-        print 'Record start'
-    else:
-        print 'Record stop'
-    pass
 @sio.on('stopMove')
 def stopMove(sid, data):
     print 'Stop moving.'
     stopMotors()
     pass
-def serve_app(_sio, _app):
-    app = socketio.Middleware(_sio, _app)
-    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
-    
+
 #MAIN EXECUTE
 if __name__ == '__main__':
-    
-    wst = threading.Thread(target=serve_app, args=(sio,app))
-    wst.daemon = True
-    wst.start()
+    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
