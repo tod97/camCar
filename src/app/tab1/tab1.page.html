@@ -43,17 +43,15 @@
     <div id="zone_joystick" style="position:relative; height: 40%;"></div>
 
     <ion-grid>
-      <ion-row>
+      <ion-row *ngIf="showCamera">
         <ion-col>
-          <ion-button size="large" expand="block" (click)="turn(180)">
-            <ion-icon slot="start" name="refresh"></ion-icon>
-            180°
+          <ion-button *ngIf="!isRecording" size="large" expand="block" (click)="recordStart()">
+            <ion-icon slot="start" name="radio-button-on"></ion-icon>
+            Start Record
           </ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button size="large" expand="block"(click)="turn(360)">
-            <ion-icon slot="start" name="walk"></ion-icon>
-            360°
+          <ion-button *ngIf="isRecording" size="large" color="danger" expand="block" (click)="recordStop()">
+            <ion-icon slot="start" name="square"></ion-icon>
+            Stop Record
           </ion-button>
         </ion-col>
       </ion-row>

@@ -45,8 +45,7 @@ class CameraStream(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.stream.release()
 
-cap = CameraStream().start()
-
+camera = CameraStream().start()
 
 #DC MOTORS CONFIG
 Motor1A = 19
@@ -87,19 +86,6 @@ def moveMotors(dLeft, dRight):
         GPIO.output(Motor2B,GPIO.HIGH)
         GPIO.output(Motor2E,GPIO.HIGH)
 
-def turnMotors(angle):
-    global rightPwm, leftPwm
-    rightPwm.ChangeDutyCycle(100)
-    leftPwm.ChangeDutyCycle(100)
-    GPIO.output(Motor1A,GPIO.HIGH)
-    GPIO.output(Motor1B,GPIO.LOW)
-    GPIO.output(Motor1E,GPIO.HIGH)
-    GPIO.output(Motor2A,GPIO.LOW)
-    GPIO.output(Motor2B,GPIO.HIGH)
-    GPIO.output(Motor2E,GPIO.HIGH)
-    sleep(0.0038 * angle)
-    stopMotors()
-
 def stopMotors():
     GPIO.output(Motor1A,GPIO.LOW)
     GPIO.output(Motor1B,GPIO.LOW)
@@ -119,8 +105,8 @@ def index():
 
 
 def gen_frame():
-    while cap:
-        frame = cap.read()
+    while camera:
+        frame = camera.read()
         convert = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + convert + b'\r\n') # concate frame one by one and show result
@@ -144,10 +130,12 @@ def move(sid, data):
     print 'Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight']))
     moveMotors(int(data['dLeft']), int(data['dRight']))
     pass
-@sio.on('turn')
+@sio.on('record')
 def turn(sid, data):
-    print 'Turn ' + str(data['angle']) + ' degrees'
-    turnMotors(data['angle'])
+    if data:
+        print 'Record start'
+    else:
+        print 'Record stop'
     pass
 @sio.on('stopMove')
 def stopMove(sid, data):

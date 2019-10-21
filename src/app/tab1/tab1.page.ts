@@ -14,6 +14,7 @@ export class Tab1Page {
   controller: any;
   controllerData: any;
   showCamera = false;
+  isRecording = false;
 
   constructor(private req: HttpRequestsService) {
   }
@@ -65,8 +66,14 @@ export class Tab1Page {
     return {dLeft, dRight};
   }
 
-  turn(angle) {
-    this.req.socketSend('turn', {angle});
+  recordStart() {
+    this.isRecording = true;
+    this.req.socketSend('record', true);
+  }
+
+  recordStop() {
+    this.isRecording = false;
+    this.req.socketSend('record', false);
   }
 
   connect() {
