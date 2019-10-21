@@ -75,13 +75,13 @@ export class Tab1Page {
   }
 
   recordStart() {
+    this.req.recordVideo(true);
     this.isRecording = true;
-    this.req.socketSend('record', true);
   }
 
   recordStop() {
+    this.req.recordVideo(false);
     this.isRecording = false;
-    this.req.socketSend('record', false);
   }
 
   connect() {

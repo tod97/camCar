@@ -1,5 +1,8 @@
+from threading import Thread, Lock
 import cv2
-from flask import Flask, render_template, Response
+from flask import Flask, request, render_template, Response
+from flask_cors import CORS
+import json
 
 #VIDEOCAMERA DEFINITION
 class CameraStream(object):
@@ -41,11 +44,7 @@ class CameraStream(object):
 
 cap = CameraStream().start()
 app = Flask(__name__)
-
-#PY CAMERA API
-#@app.route('/')
-#def index():
-#    return render_template('index.html')
+CORS(app)
 
 def gen_frame():
     while cap:
@@ -58,6 +57,20 @@ def gen_frame():
 def video_feed():
     return Response(gen_frame(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/record',methods=['POST'])
+def move():
+   request.get_data()
+   data = json.loads(request.data)
+   try:
+      recordVideo = str(data['recordVideo'])
+   except KeyError:
+      return "Missing data", 500
+
+   if recordVideo:
+      return "Start recording", 200
+   else:
+      return "Stop recording", 200
 
 #MAIN EXECUTE
 if __name__ == '__main__':

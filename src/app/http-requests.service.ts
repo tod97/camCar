@@ -11,7 +11,7 @@ export class HttpRequestsService {
 
   id: string;
   site = 'http://192.168.1.6';
-  port = '5000';
+  port = '4000';
   isApp: boolean;
   socketConnected = false;
   frame: any = '';
@@ -53,6 +53,18 @@ export class HttpRequestsService {
   socketDisconnect() {
     this.frame = '';
     this.socket.disconnect();
+  }
+
+  recordVideo(recordVideo) {
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    this.http.post(this.site + ':' + this.port + '/record', {
+      recordVideo
+    }, {headers})
+    .subscribe(data => {
+      console.log('LOG: ' + JSON.stringify(data));
+    });
   }
 
   /*
