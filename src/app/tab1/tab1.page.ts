@@ -75,13 +75,21 @@ export class Tab1Page {
   }
 
   recordStart() {
-    this.req.recordVideo(true);
-    this.isRecording = true;
+    this.req.recordVideo(true)
+    .subscribe(data => {
+      this.isRecording = true;
+     }, error => {
+      console.log(error);
+    });
   }
 
   recordStop() {
-    this.req.recordVideo(false);
-    this.isRecording = false;
+    this.req.recordVideo(false)
+    .subscribe(data => {
+      this.isRecording = false;
+     }, error => {
+      console.log(error);
+    });
   }
 
   connect() {

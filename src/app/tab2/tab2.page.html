@@ -1,9 +1,39 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Tab Two
+      Gallery
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="updateData($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-item-divider>
+    <ion-label>
+      Video Recorded
+    </ion-label>
+  </ion-item-divider>
+  <ion-item *ngIf="elements.length == 0">
+    No video recorded yet.
+  </ion-item>
+  <ion-list>
+    <ng-container *ngFor="let itm of elements">
+      <ion-item (click)="showVideo(itm)">
+        <ion-label>
+          <b *ngIf="nameSelected == itm">{{itm}}</b>
+          <span *ngIf="nameSelected != itm">{{itm}}</span>
+        </ion-label>
+        <ion-icon *ngIf="nameSelected != itm" slot="end" name="arrow-forward"></ion-icon>
+        <ion-icon *ngIf="nameSelected == itm" slot="end" name="arrow-down"></ion-icon>
+      </ion-item>
+      <ion-card *ngIf="nameSelected == itm" style="height:40%" class="welcome-card">
+        <ng-container style="height:100%;width:100%;">
+          <ion-img src="http://192.168.1.6:4000/showRecord?name={{nameSelected}}">
+          </ion-img>
+        </ng-container>
+      </ion-card>
+    </ng-container>
+  </ion-list>
+</ion-content>

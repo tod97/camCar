@@ -59,12 +59,14 @@ export class HttpRequestsService {
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
 
-    this.http.post(this.site + ':' + this.port + '/record', {recordVideo}, {headers, responseType: 'text'})
-      .subscribe(data => {
-        console.log(data);
-       }, error => {
-        console.log(error);
-      });
+    return this.http.post(this.site + ':' + this.port + '/record', {recordVideo}, {headers, responseType: 'text'});
+  }
+
+  getRecordsList() {
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return this.http.get(this.site + ':' + this.port + '/records', {headers});
   }
 
   /*

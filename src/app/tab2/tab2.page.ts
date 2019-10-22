@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HttpRequestsService } from '../http-requests.service';
 
 @Component({
   selector: 'app-tab2',
@@ -7,6 +8,33 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
-  constructor() {}
+  elements: any = [];
+  nameSelected = '';
+
+  constructor(private req: HttpRequestsService) {
+  }
+
+  ionViewWillEnter() {
+    this.updateData();
+  }
+
+  updateData(evt?: any) {
+    this.req.getRecordsList()
+    .subscribe(data => {
+      this.elements = (data['files']) ? data['files'] : [];
+      if (evt) { evt.target.complete(); }
+     }, error => {
+      console.log(error);
+      if (evt) { evt.target.complete(); }
+    });
+  }
+
+  showVideo(name) {
+    if (this.nameSelected === name) {
+      this.nameSelected = '';
+    } else {
+      this.nameSelected = name;
+    }
+  }
 
 }
