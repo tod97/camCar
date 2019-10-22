@@ -3,6 +3,7 @@ import cv2
 from flask import Flask, request, render_template, Response
 from flask_cors import CORS
 import json
+import os
 
 #VIDEOCAMERA DEFINITION
 class CameraStream(object):
@@ -11,9 +12,32 @@ class CameraStream(object):
 
         (self.grabbed, self.frame) = self.stream.read()
         self.started = False
+        self.isRecording = False
         self.read_lock = Lock()
 
-    def start(self):
+    def getWidth(self):
+        return self.stream.get(cv2.CAP_PROP_FRAME_WIDTH)
+    def getHeight(self):
+        return self.stream.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    def getFrame(self):
+        return self.stream.get(cv2.CAP_PROP_FPS)
+    def startRecord(self):
+        FILE_OUTPUT = 'record.avi'
+        i = 1
+        while os.path.isfile(FILE_OUTPUT):
+            FILE_OUTPUT = 'record_' + str(i) + '.avi'
+            i += 1
+        width = cap.getWidth()
+        height = cap.getHeight()
+        frame = cap.getFrame()
+        fourcc = cv2.VideoWriter_fourcc(*'X264')
+        self.out = cv2.VideoWriter(FILE_OUTPUT,fourcc, frame, (int(width),int(height)))
+        self.isRecording = True
+    def stopRecord(self):
+        self.isRecording = False
+        self.out = None
+
+    def startStream(self):
         if self.started:
             print("already started!!")
             return None
@@ -25,6 +49,8 @@ class CameraStream(object):
     def update(self):
         while self.started:
             (grabbed, frame) = self.stream.read()
+            if self.isRecording:
+                self.out.write(frame)
             self.read_lock.acquire()
             self.grabbed, self.frame = grabbed, frame
             self.read_lock.release()
@@ -35,14 +61,14 @@ class CameraStream(object):
         self.read_lock.release()
         return frame
 
-    def stop(self):
+    def stopStream(self):
         self.started = False
         self.thread.join()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.stream.release()
 
-cap = CameraStream().start()
+cap = CameraStream().startStream()
 app = Flask(__name__)
 CORS(app)
 
@@ -59,18 +85,21 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/record',methods=['POST'])
-def move():
-   request.get_data()
-   data = json.loads(request.data)
-   try:
-      recordVideo = str(data['recordVideo'])
-   except KeyError:
-      return "Missing data", 500
+def record():
+    global cap
+    request.get_data()
+    data = json.loads(request.data)
+    try:
+        recordVideo = str(data['recordVideo'])
+    except KeyError:
+        return "Missing data", 500
 
-   if recordVideo:
-      return "Start recording", 200
-   else:
-      return "Stop recording", 200
+    if recordVideo == "True":
+        cap.startRecord()
+        return "Start recording", 200
+    else:
+        cap.stopRecord()
+        return "Stop recording", 200
 
 #MAIN EXECUTE
 if __name__ == '__main__':

@@ -59,12 +59,12 @@ export class HttpRequestsService {
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
 
-    this.http.post(this.site + ':' + this.port + '/record', {
-      recordVideo
-    }, {headers})
-    .subscribe(data => {
-      console.log('LOG: ' + JSON.stringify(data));
-    });
+    this.http.post(this.site + ':' + this.port + '/record', {recordVideo}, {headers, responseType: 'text'})
+      .subscribe(data => {
+        console.log(data);
+       }, error => {
+        console.log(error);
+      });
   }
 
   /*
