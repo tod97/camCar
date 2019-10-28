@@ -30,6 +30,12 @@
       </ion-item>
       <ion-card *ngIf="nameSelected == itm" style="height:40%" class="welcome-card">
         <ng-container style="height:100%;width:100%;">
+          <ion-button (click)="repeatVideo()" color="dark" style="z-index:10;position:absolute;">
+            <ion-icon size="large" name="refresh"></ion-icon>
+          </ion-button>
+          <ion-button (click)="deleteVideo(itm)" color="dark" style="z-index:10;position:absolute;right: 0;">
+            <ion-icon size="large" name="trash"></ion-icon>
+          </ion-button>
           <ion-img src="http://raspberrypi:4000/showRecord?name={{nameSelected}}">
           </ion-img>
         </ng-container>

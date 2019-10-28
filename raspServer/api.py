@@ -4,6 +4,7 @@ from flask import Flask, request, render_template, Response, jsonify
 from flask_cors import CORS
 import datetime
 import json
+import os
 from os import listdir
 from os.path import isfile, join
 
@@ -24,7 +25,7 @@ class CameraStream(object):
     def getFrame(self):
         return self.stream.get(cv2.CAP_PROP_FPS)
     def startRecord(self):
-        FILE_OUTPUT = './records/'+str(datetime.datetime.now())+'.avi'
+        FILE_OUTPUT = os.path.join(os.path.expanduser('~'), 'records', str(datetime.datetime.now())+'.avi')
         width = cap.getWidth()
         height = cap.getHeight()
         frame = cap.getFrame()
@@ -99,16 +100,29 @@ def record():
         cap.stopRecord()
         return "Stop recording", 200
 
+@app.route('/record/delete',methods=['POST'])
+def deleteRecord():
+    data = json.loads(request.data)
+    try:
+        name = str(data['name'])
+    except KeyError:
+        return "Invalid name", 500
+    path = os.path.join(os.path.expanduser('~'), 'records', name)
+    os.remove(path)
+    return "File removed", 200
+
 @app.route('/records',methods=['GET'])
 def getRecordList():
     res = {}
-    onlyfiles = [f for f in listdir('./records') if isfile(join('./records', f))]
+    path = os.path.join(os.path.expanduser('~'), 'records')
+    onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
     res["files"] = [k for k in onlyfiles if '.avi' in k]
     res["files"].sort(reverse=True)
     return jsonify(res), 200
 
 def gen_video(name):
-    video = CameraStream('./records/'+name).startStream()
+    path = os.path.join(os.path.expanduser('~'), 'records', name)
+    video = CameraStream(path).startStream()
     while video:
         frame = video.read()
         convert = cv2.imencode('.jpg', frame)[1].tobytes()

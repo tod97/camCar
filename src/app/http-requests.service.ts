@@ -69,6 +69,13 @@ export class HttpRequestsService {
     return this.http.get(this.site + ':' + this.port + '/records', {headers});
   }
 
+  deleteVideo(name) {
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return this.http.post(this.site + ':' + this.port + '/record/delete', {name}, {headers, responseType: 'text'});
+  }
+
   /*
   apiConnect() {
     const headers = new HttpHeaders();
