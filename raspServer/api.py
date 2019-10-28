@@ -114,10 +114,10 @@ def gen_video(name):
         convert = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + convert + b'\r\n') # concate frame one by one and show result
+    video.stopStream()
 @app.route('/showRecord')
 def showRecord():
     name = request.args.get('name')
-    print name
     if name:
         return Response(gen_video(name),
                         mimetype='multipart/x-mixed-replace; boundary=frame')

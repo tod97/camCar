@@ -1,7 +1,11 @@
 Before starting the project, exec those commands:
 
-pip install eventlet
-pip install flask-cors
-pip install socketio
-pip install python-socketio
-apt-get install python-opencv
+- pip install eventlet
+- pip install flask-cors
+- pip install socketio
+- pip install python-socketio
+- apt-get install python-opencv
+
+After that, run:
+- "api.py" to start the server for video stream (camera)
+- "server.py" to start the server for socketio (controller)
