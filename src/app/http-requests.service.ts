@@ -10,7 +10,7 @@ import { Socket } from 'ngx-socket-io';
 export class HttpRequestsService {
 
   id: string;
-  site = 'http://192.168.1.6';
+  site = 'http://raspberrypi';
   port = '4000';
   isApp: boolean;
   socketConnected = false;
