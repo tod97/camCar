@@ -29,7 +29,7 @@ class CameraStream(object):
         width = cap.getWidth()
         height = cap.getHeight()
         frame = cap.getFrame()
-        fourcc = cv2.VideoWriter_fourcc(*'X264')
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
         self.out = cv2.VideoWriter(FILE_OUTPUT,fourcc, frame, (int(width),int(height)))
         self.isRecording = True
     def stopRecord(self):
@@ -71,9 +71,16 @@ cap = CameraStream().startStream()
 app = Flask(__name__)
 CORS(app)
 
+def rescale_frame(frame, percent=75):
+    width = int(frame.shape[1] * percent/ 100)
+    height = int(frame.shape[0] * percent/ 100)
+    dim = (width, height)
+    return cv2.resize(frame, dim, interpolation =cv2.INTER_AREA)
+
 def gen_frame():
     while cap:
         frame = cap.read()
+        frame = rescale_frame(frame, 25)
         convert = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + convert + b'\r\n') # concate frame one by one and show result

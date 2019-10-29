@@ -60,7 +60,7 @@ export class Tab2Page {
           role: 'cancel',
           cssClass: 'secondary'
         }, {
-          text: 'Okay',
+          text: 'Delete',
           handler: () => {
             this.req.deleteVideo(name)
             .subscribe(data => {
