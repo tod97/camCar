@@ -56,6 +56,13 @@ export class HttpRequestsService {
   }
 
   recordVideo(recordVideo) {
+
+    if (recordVideo) {
+      this.socket.emit('startRecord');
+    } else {
+      this.socket.emit('stopRecord');
+    }
+
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
 

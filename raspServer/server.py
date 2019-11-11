@@ -70,17 +70,17 @@ def disconnect(sid):
 def move(sid, data):
     global file_txt
     if file_txt is not None:
-        file_txt.write('Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight'])))
+        file_txt.write('Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight'])) + '\n')
     moveMotors(int(data['dLeft']), int(data['dRight']))
     pass
 @sio.on('stopMove')
-def stopMove(sid, data):
+def stopMove(sid):
     print 'Stop moving.'
     stopMotors()
     pass
 
 @sio.on('startRecord')
-def startRecord(sid, data):
+def startRecord(sid):
     global file_txt
     FILE_OUTPUT = os.path.join(os.path.expanduser('~'), 'records', str(datetime.datetime.now())+'.txt')
     file_txt = open(FILE_OUTPUT,"a")
