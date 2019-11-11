@@ -14,5 +14,6 @@ After that, run:
 IF U WANT:
 - To run those scripts on startup:
   Run "sudo nano /etc/rc.local"
-  Add "python /home/pi/git/api.py &
-       python /home/pi/git/server.py &"
+  Add 
+    u pi -c 'python /home/pi/git/api.py &'
+    u pi -c 'python /home/pi/git/server.py &'
