@@ -2,6 +2,10 @@ import eventlet
 import socketio
 import RPi.GPIO as GPIO
 from time import sleep
+import datetime
+import os
+
+file_txt = None
 
 #DC MOTORS CONFIG
 Motor1A = 19
@@ -64,13 +68,28 @@ def disconnect(sid):
     pass
 @sio.on('move')
 def move(sid, data):
-    print 'Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight']))
+    global file_txt
+    if file_txt is not None:
+        file_txt.write('Left Power: ' + str(int(data['dLeft'])) + ' Right Power: ' + str(int(data['dRight'])))
     moveMotors(int(data['dLeft']), int(data['dRight']))
     pass
 @sio.on('stopMove')
 def stopMove(sid, data):
     print 'Stop moving.'
     stopMotors()
+    pass
+
+@sio.on('startRecord')
+def startRecord(sid, data):
+    global file_txt
+    FILE_OUTPUT = os.path.join(os.path.expanduser('~'), 'records', str(datetime.datetime.now())+'.txt')
+    file_txt = open(FILE_OUTPUT,"a")
+    pass
+@sio.on('stopRecord')
+def stopRecord(sid, data):
+    global file_txt
+    file_txt.close()
+    file_txt = None
     pass
 
 #MAIN EXECUTE
